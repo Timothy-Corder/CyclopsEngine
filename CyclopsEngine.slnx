@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="CyclopsEngine.csproj" />
+  <Project Path="TestGame/TestGame.csproj" />
+</Solution>
