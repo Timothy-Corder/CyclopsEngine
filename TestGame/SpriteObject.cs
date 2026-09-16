@@ -11,18 +11,9 @@ namespace TestGame
 {
   public class SpriteObject : GameObject
   {
-    public Texture2D Sprite;
-    public Color Color;
     public SpriteObject(Texture2D sprite, Color? color, Vector2 position, Vector2? velocity = null, Vector2? scale = null) : base(position, velocity, scale)
     {
-      if (color is null) color = Color.White;
-      Sprite = sprite;
-      Color = (Color)color;
-    }
-    public override void OnDraw(GameTime gameTime, SpriteBatch spriteBatch)
-    {
-      spriteBatch.Draw(Sprite, Bounds, Color);
-      base.OnDraw(gameTime, spriteBatch);
+      Components.Add(new SpriteComponent(this, sprite, color));
     }
     public override void OnClick(MouseButton button)
     {

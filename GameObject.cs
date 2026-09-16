@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -74,6 +75,21 @@ public class GameObject : IDisposable
         set => RotationDegrees = MathHelper.ToDegrees(value);
     }
 
+    public List<IComponent?>? _components;
+    public List<IComponent?> Components 
+    { 
+        get
+        {
+            if (_components is null) _components = new List<IComponent?>();
+
+            return _components;
+        }
+        set
+        {
+            _components = value;
+        }
+    }
+
     public GameObject(Vector2 position, Vector2? velocity = null, Vector2? scale = null)
     {
         Position = position;
@@ -90,8 +106,13 @@ public class GameObject : IDisposable
         }
     }
 
-    public virtual void OnDraw(GameTime gameTime, SpriteBatch spriteBatch)
+    public void OnDraw(GameTime gameTime, SpriteBatch spriteBatch)
     {
+        foreach (var comp in Components)
+        {
+            if (!(comp?.NeedsDraw) ?? true) continue;
+            comp?.Draw(gameTime, spriteBatch);
+        }
     }
 
     public virtual void DrawBox(GameTime gameTime, SpriteBatch spriteBatch)
@@ -110,6 +131,12 @@ public class GameObject : IDisposable
 
     public virtual void Update(GameTime gameTime)
     {
+        if (!Enabled) return;
+        foreach (var comp in Components)
+        {
+            if (!(comp?.NeedsUpdate) ?? true) continue;
+            comp?.Update(gameTime);
+        }
         Position += Velocity * (float)gameTime.ElapsedGameTime.TotalSeconds;
     }
 
