@@ -26,6 +26,7 @@ namespace TestGame
       base.Initialize();
 
       new SpriteObject(Runtime.Pixel, null, new Vector2(5), null, new Vector2(10));
+      //SpriteObject.CreatePrimitive();
     }
 
     protected override void LoadContent()

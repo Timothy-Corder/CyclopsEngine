@@ -6,11 +6,23 @@ namespace CyclopsEngine;
 
 public enum MouseButton
 {
+    /// <summary>
+    /// The left mouse button.
+    /// </summary>
     Left,
+    /// <summary>
+    /// The right mouse button.
+    /// </summary>
     Right,
+    /// <summary>
+    /// The middle mouse button.
+    /// </summary>
     Middle
 }
 
+/// <summary>
+/// Tracks keyboard and mouse state and raises mouse press, release, click, and double-click events.
+/// </summary>
 public sealed class InputService
 {
     private static readonly TimeSpan DoubleClickWindow = TimeSpan.FromMilliseconds(500);
@@ -24,42 +36,96 @@ public sealed class InputService
     private readonly bool[] _hasPreviousClick = new bool[3];
     private TimeSpan _elapsed;
 
+    /// <summary>
+    /// The mouse state captured during the previous update.
+    /// </summary>
     public MouseState PreviousMouseState { get; private set; }
 
+    /// <summary>
+    /// The most recently captured mouse state.
+    /// </summary>
     public MouseState CurrentMouseState { get; private set; }
 
+    /// <summary>
+    /// The keyboard state captured during the previous update.
+    /// </summary>
     public KeyboardState PreviousKeyboardState { get; private set; }
 
+    /// <summary>
+    /// The most recently captured keyboard state.
+    /// </summary>
     public KeyboardState CurrentKeyboardState { get; private set; }
 
+    /// <summary>
+    /// The current mouse position relative to the game window.
+    /// </summary>
     public Point MousePosition => CurrentMouseState.Position;
 
+    /// <summary>
+    /// The mouse movement since the previous update.
+    /// </summary>
     public Vector2 MouseVelocity => new(
         CurrentMouseState.X - PreviousMouseState.X,
         CurrentMouseState.Y - PreviousMouseState.Y);
 
+    /// <summary>
+    /// Whether the left mouse button is currently pressed.
+    /// </summary>
     public bool LeftButtonPressed => CurrentMouseState.LeftButton == ButtonState.Pressed;
 
+    /// <summary>
+    /// Whether the right mouse button is currently pressed.
+    /// </summary>
     public bool RightButtonPressed => CurrentMouseState.RightButton == ButtonState.Pressed;
 
+    /// <summary>
+    /// Whether the middle mouse button is currently pressed.
+    /// </summary>
     public bool MiddleButtonPressed => CurrentMouseState.MiddleButton == ButtonState.Pressed;
 
+    /// <summary>
+    /// Whether a left-button click was completed during the current update.
+    /// </summary>
     public bool LeftClicked { get; private set; }
 
+    /// <summary>
+    /// Whether a right-button click was completed during the current update.
+    /// </summary>
     public bool RightClicked { get; private set; }
 
+    /// <summary>
+    /// Whether a middle-button click was completed during the current update.
+    /// </summary>
     public bool MiddleClicked { get; private set; }
 
+    /// <summary>
+    /// Represents a handler for a mouse action at a window position.
+    /// </summary>
     public delegate void MouseClickEventHandler(int x, int y, MouseButton mouseButton);
 
+    /// <summary>
+    /// Occurs when a mouse button is pressed inside the active game window.
+    /// </summary>
     public event MouseClickEventHandler? MousePress;
 
+    /// <summary>
+    /// Occurs when a mouse button is released inside the active game window.
+    /// </summary>
     public event MouseClickEventHandler? MouseRelease;
 
+    /// <summary>
+    /// Occurs when a mouse button is pressed and released within the movement tolerance.
+    /// </summary>
     public event MouseClickEventHandler? MouseClick;
 
+    /// <summary>
+    /// Occurs when two qualifying clicks happen within the configured time and movement tolerances.
+    /// </summary>
     public event MouseClickEventHandler? MouseDoubleClick;
 
+    /// <summary>
+    /// Creates an input service for the specified game instance and captures its initial input state.
+    /// </summary>
     public InputService(Game game)
     {
         _game = game ?? throw new ArgumentNullException(nameof(game));
@@ -69,19 +135,34 @@ public sealed class InputService
         PreviousKeyboardState = CurrentKeyboardState;
     }
 
+    /// <summary>
+    /// Creates an input service for the active runtime game instance.
+    /// </summary>
     public InputService()
         : this(Runtime.GameInstance)
     {
     }
 
+    /// <summary>
+    /// Determines whether a key is currently pressed.
+    /// </summary>
     public bool IsKeyPressed(Keys key) => CurrentKeyboardState.IsKeyDown(key);
 
+    /// <summary>
+    /// Determines whether a key became pressed during the current update.
+    /// </summary>
     public bool WasKeyPressed(Keys key) =>
         CurrentKeyboardState.IsKeyDown(key) && PreviousKeyboardState.IsKeyUp(key);
 
+    /// <summary>
+    /// Determines whether a key was released during the current update.
+    /// </summary>
     public bool WasKeyReleased(Keys key) =>
         CurrentKeyboardState.IsKeyUp(key) && PreviousKeyboardState.IsKeyDown(key);
 
+    /// <summary>
+    /// Captures current input state and processes mouse-button transitions and click gestures.
+    /// </summary>
     public void Update(GameTime gameTime)
     {
         _elapsed += gameTime.ElapsedGameTime;
@@ -168,5 +249,8 @@ public sealed class InputService
         Array.Fill(_clickTrackers, false);
     }
 
+    /// <summary>
+    /// Gets the mouse movement since the previous update.
+    /// </summary>
     public Vector2 GetMouseVelocity() => MouseVelocity;
 }

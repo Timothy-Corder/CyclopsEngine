@@ -14,23 +14,47 @@ public static class Runtime
     private static InputService? _input;
     private static TextureService? _textures;
 
+    /// <summary>
+    /// Whether the runtime has been initialized with a game instance.
+    /// </summary>
     public static bool IsInitialized => _gameInstance is not null;
 
+    /// <summary>
+    /// The active game instance associated with this runtime.
+    /// </summary>
     public static Game GameInstance => _gameInstance
         ?? throw new InvalidOperationException("Runtime.Initialize must be called before accessing the game instance.");
 
+    /// <summary>
+    /// The runtime's global input service.
+    /// </summary>
     public static InputService Input => _input
         ?? throw new InvalidOperationException("Runtime.Initialize must be called before accessing input.");
 
+    /// <summary>
+    /// The runtime's global texture service.
+    /// </summary>
     public static TextureService Textures => _textures
         ?? throw new InvalidOperationException("Runtime.Initialize must be called before accessing textures.");
 
+    /// <summary>
+    /// The runtime's global collection of game objects.
+    /// </summary>
     public static GameObjectDictionary GameObjects { get; } = new();
 
+    /// <summary>
+    /// The shared random-number generator used by the runtime.
+    /// </summary>
     public static Random Random { get; set; } = new();
 
+    /// <summary>
+    /// A one-pixel white texture used to draw primitive shapes after content has been loaded.
+    /// </summary>
     public static Texture2D? Pixel { get; private set; }
 
+    /// <summary>
+    /// Initializes the runtime and its global services for a game instance.
+    /// </summary>
     public static void Initialize(Game game)
     {
         ArgumentNullException.ThrowIfNull(game);
@@ -66,18 +90,27 @@ public static class Runtime
         Pixel.SetData([Color.White]);
     }
 
+    /// <summary>
+    /// Updates input state and all registered game objects.
+    /// </summary>
     public static void Update(GameTime gameTime)
     {
         Input.Update(gameTime);
         GameObjects.Update(gameTime);
     }
 
+    /// <summary>
+    /// Draws all registered game objects and optionally their bounds.
+    /// </summary>
     public static void Draw(GameTime gameTime, SpriteBatch spriteBatch, bool drawBounds = false)
     {
         ArgumentNullException.ThrowIfNull(spriteBatch);
         GameObjects.Draw(gameTime, spriteBatch, drawBounds);
     }
 
+    /// <summary>
+    /// Clears runtime state, detaches input handlers, and disposes runtime-owned graphics resources.
+    /// </summary>
     public static void Shutdown()
     {
         if (_input is not null)
