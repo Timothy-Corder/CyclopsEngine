@@ -1,0 +1,1 @@
+I got tired of how closed-off Unity feels to me. It's way harder than it should be to just draw something to the screen. Godot was even worse. Then I found MonoGame. MonoGame is awesome, but it lacks some of the abstractions I did like. So I'm making my own.
